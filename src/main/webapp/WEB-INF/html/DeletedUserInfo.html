@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>人口基本信息查询页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--<script type="text/javascript" src = "../../js/jquery-3.4.1.js"></script>-->
+    <!--    <link rel="stylesheet" href="../../layui/css/layui.css"  media="all">-->
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+
+</head>
+<body>
+<div style="margin:0 auto ;text-align: center;">
+    <div class="demoTable">
+        请输入身份证：
+        <div class="layui-inline">
+            <input class="layui-input" name="idCard" id="demoReloadidCard" autocomplete="off">
+        </div>
+        请输入姓名：
+        <div class="layui-inline">
+            <input class="layui-input" name="name" id="demoReloadname" autocomplete="off">
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label">请选择民族</label>
+            <div class="layui-input-inline">
+                <select class="layui-input" name="demoReloadnation" lay-verify="required" lay-search=""
+                        id="demoReloadnation">
+                    <option value="0"></option>
+                    <option value="1">汉族</option>
+                    <option value="2">蒙古族</option>
+                    <option value="3">回族</option>
+                    <option value="4">藏族</option>
+                    <option value="5">维吾尔族</option>
+                    <option value="6">苗族</option>
+                    <option value="7">彝族</option>
+                    <option value="8">壮族</option>
+                    <option value="9">布依族</option>
+                    <option value="10">朝鲜族</option>
+                    <option value="11">满族</option>
+                    <option value="12">侗族</option>
+                    <option value="13">瑶族</option>
+                    <option value="14">白族</option>
+                    <option value="15">土家族</option>
+                    <option value="16">哈尼族</option>
+                    <option value="17">哈萨克族</option>
+                    <option value="18">傣族</option>
+                    <option value="19">黎族</option>
+                    <option value="20">傈僳族</option>
+                    <option value="21">佤族</option>
+                    <option value="22">畲族</option>
+                    <option value="23">高山族</option>
+                    <option value="24">拉祜族</option>
+                    <option value="25">水族</option>
+                    <option value="26">东乡族</option>
+                    <option value="27">纳西族</option>
+                    <option value="28">景颇族</option>
+                    <option value="29">柯尔克孜族</option>
+                    <option value="30">土族</option>
+                    <option value="31">达斡尔族</option>
+                    <option value="32">仫佬族</option>
+                    <option value="33">羌族</option>
+                    <option value="34">布朗族</option>
+                    <option value="35">撒拉族</option>
+                    <option value="36">毛难族</option>
+                    <option value="37">仡佬族</option>
+                    <option value="38">锡伯族</option>
+                    <option value="39">阿昌族</option>
+                    <option value="40">普米族</option>
+                    <option value="41">塔吉克族</option>
+                    <option value="42">怒族</option>
+                    <option value="43">乌孜别克族</option>
+                    <option value="44">俄罗斯族</option>
+                    <option value="45">鄂温克族</option>
+                    <option value="46">崩龙族</option>
+                    <option value="47">保安族</option>
+                    <option value="48">裕固族</option>
+                    <option value="49">京族</option>
+                    <option value="50">塔塔尔族</option>
+                    <option value="51">独龙族</option>
+                    <option value="52">鄂伦春族</option>
+                    <option value="53">赫哲族</option>
+                    <option value="54">门巴族</option>
+                    <option value="55">珞巴族</option>
+                    <option value="56">基诺族</option>
+                </select>
+            </div>
+        </div>
+        请输入数据来源 ：
+        <div class="layui-inline">
+            <input class="layui-input" name="resource" id="resource" autocomplete="off">
+        </div>
+        <button class="layui-btn" id="search" data-type="reload" onclick="return false">搜索</button>
+
+    </div>
+</div>
+<!--<button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>-->
+</div>
+
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+
+<!--<script src="../../layui/layui.js" charset="utf-8"></script>-->
+<script src="../../layui/layui.all.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo" style="text-align: center">
+    <a class="layui-btn layui-btn-xs layui-btn-xs" lay-event="back">还原</a>
+</script>
+<script>
+
+
+    layui.use('table', function () {
+        var table = layui.table;
+        var layer = layui.layer,
+            $ = layui.jquery;
+        table.render({
+            elem: '#test'
+            , url: '/FindPageByOthers'
+            , toolbar: '#toolbarDemo'
+            , title: '用户数据表'
+            , totalRow: true
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    // {field:'rowId', title:'ID', width:80, fixed: 'left',sort:true}
+                    , {field: 'idCard', title: '身份证', width: 200}
+                    , {field: 'name', title: '姓名', width: 80}
+                    , {field: 'newsex', title: '性别', width: 80}
+                    , {field: 'newnation', title: '民族', width: 140}
+                    , {field: 'height', title: '身高', width: 80}
+                    , {field: 'bornDate', title: '出生日期', width: 120}
+                    , {field: 'birthPlace', title: '出生地', width: 100}
+                    , {field: 'phone', title: '手机号码', width: 140}
+                    , {field: 'education', title: '教育程度', width: 120}
+                    , {field: 'politic', title: '政治面貌', width: 120}
+                    , {field: 'source', title: '数据来源', width: 100}
+                    , {field: 'right', title: '操作', toolbar: '#barDemo', width: 80}
+                ]
+            ]
+            , page: true
+            , id: 'userTableReload'
+            , limit: 10
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            var rowId = data.rowId;
+            var editList = [];//存放获取到的那条json数据的value值
+            $.each(data, function (name, value) {
+                editList.push(value);
+            });
+            if (obj.event === 'back') {
+                layer.confirm('确定还原吗', function (index) {
+                    $.ajax({
+                        url: "/deleteUserInfo",
+                        data: {
+                            rowId: rowId
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status != 0) {
+                                layer.msg("还原成功！");
+                                layer.close(index);
+                                //更新数据
+                                $("#search").click();
+                            } else {
+                                layer.msg("还原失败!");
+                            }
+                        }
+                    })
+                });
+            }  else {
+
+            }
+        });
+
+        //根据条件查询表格数据重新加载
+        var $ = layui.$, active = {
+            reload: function () {
+                var idCard = document.getElementById("demoReloadidCard").value;
+                var name = document.getElementById("demoReloadname").value;
+                var resource = document.getElementById("resource").value;
+                //   var nation = document.getElementById("demoReloadnation").value;
+                // var nation=$("#demoReloadnation option:selected").val();
+
+                var myselect = document.getElementById("demoReloadnation");
+                var index = myselect.selectedIndex;
+                var nation = myselect.options[index].value;
+
+
+                //执行重载
+                table.reload('userTableReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    //根据条件查询
+                    , where: {
+                        idCard: idCard,
+                        name: name,
+                        nation: nation,
+                        resource:resource
+                    }
+                });
+            }
+        };
+
+        //点击搜索按钮根据用户名称查询
+        $('#search').on('click',
+            function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+    });
+
+
+</script>
+
+</body>
+</html>
+
+
+<!--
+--->

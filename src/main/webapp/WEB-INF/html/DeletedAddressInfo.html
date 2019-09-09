@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>人口基本信息查询页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--<script type="text/javascript" src = "../../js/jquery-3.4.1.js"></script>-->
+    <!--    <link rel="stylesheet" href="../../layui/css/layui.css"  media="all">-->
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+
+</head>
+<body>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+<div style="margin:0 auto ;text-align: center;">
+    <div class="demoTable">
+        请选择省：
+        <div class="layui-inline">
+            <!--        <input class="layui-input" name="idCard" id="demoReloadprovince1" autocomplete="off" >-->
+            <select class="layui-select" style="width:160px" id="demoReloadprovince" name="idCard"
+                    onchange="showCity(this)">
+                <option value=""></option>
+            </select>
+        </div>
+        请选择市：
+        <div class="layui-inline">
+            <!--        <input class="layui-input" name="name" id="demoReloadcity1" autocomplete="off">-->
+            <select class="layui-select" style="width:160px" id="demoReloadcity" onchange="showCountry(this)">
+                <option value=""></option>
+            </select>
+        </div>
+        请选择区/县：
+        <div class="layui-inline">
+            <!--        <input class="layui-input" name="name" id="demoReloadarea1" autocomplete="off">-->
+            <select class="layui-select" style="width:160px" id="demoReloadarea" onchange="selecCountry(this)">
+                <option value=""></option>
+            </select>
+        </div>
+        <button class="layui-btn" id="search" data-type="reload" onclick="return false">搜索</button>
+
+    </div>
+    <!--<button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>-->
+</div>
+
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+
+<!--<script src="../../layui/layui.js" charset="utf-8"></script>-->
+<script src="../../layui/layui.all.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="back">还原</a>
+</script>
+<script>
+
+
+    layui.use('table', function () {
+        var table = layui.table;
+        var layer = layui.layer,
+            $ = layui.jquery;
+        table.render({
+            elem: '#test'
+            , url: '/selectAddressByAddress'
+            , toolbar: '#toolbarDemo'
+            , title: '地址信息数据表'
+            , totalRow: true
+            , cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    // {field:'rowId', title:'ID', width:100, fixed: 'left',sort:true}
+                    , {field: 'province', title: '省', width: 128}
+                    , {field: 'city', title: '市', width: 80}
+                    , {field: 'area', title: '区/县', width: 80}
+                    , {field: 'details', title: '住址详情', width: 200}
+                    , {field: 'newIsRent', title: '是否为出租房', width: 140}
+                    , {field: 'newIsResident', title: '是否为常驻房', width: 140}
+                    , {field: 'userName', title: '姓名', width: 140}
+                    , {field: 'userIdCard', title: '身份证', width: 180}
+                    , {field: 'right', title: '操作', toolbar: '#barDemo', width: 80}
+
+                ]
+            ]
+            , page: true
+            , id: 'userTableReload'
+            , limit: 10
+        });
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            var rowId = data.rowId;
+            var editList = [];//存放获取到的那条json数据的value值
+            $.each(data, function (name, value) {
+                editList.push(value);
+            });
+            if (obj.event === 'back') {
+                layer.confirm('确定还原吗', function (index) {
+                    $.ajax({
+                        url: "/deleteUserInfo",
+                        data: {
+                            rowId: rowId
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status != 0) {
+                                layer.msg("还原成功！");
+                                layer.close(index);
+                                //更新数据
+                                $("#search").click();
+                            } else {
+                                layer.msg("还原失败!");
+                            }
+                        }
+                    })
+                });
+            }  else {
+
+            }
+        });
+
+
+
+        //工具栏事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            switch (obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：' + data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选' : '未全选')
+                    break;
+            }
+            ;
+        });
+
+        //根据条件查询表格数据重新加载
+        var $ = layui.$, active = {
+            reload: function () {
+                var province = "";
+                var city = "";
+                var area = "";
+                var province1 = document.getElementById("demoReloadprovince").value;
+                if (province1 != "" && province1 != null) {
+                    province = provice[document.getElementById("demoReloadprovince").value]['name'];
+                }
+
+                var city1 = document.getElementById("demoReloadcity").value;
+                if (city1 != "" && city1 != null) {
+                    city = provice[province1]['city'][city1].name;
+                }
+                var area1 = document.getElementById("demoReloadarea").value;
+                if (area1 != "" && area1 != null) {
+                    area = provice[province1]['city'][city1].districtAndCounty[area1]
+                }
+
+                //执行重载
+                table.reload('userTableReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    //根据条件查询
+                    , where: {
+                        province: province,
+                        city: city,
+                        area: area,
+                    }
+                });
+            }
+        };
+
+        //点击搜索按钮根据用户名称查询
+        $('#search').on('click',
+            function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+    });
+
+
+</script>
+<script src="../../js/city.js"></script>
+<script src="../../js/method.js"></script>
+</body>
+</html>
+
+
+<!--
+--->

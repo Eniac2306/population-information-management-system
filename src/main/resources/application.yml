@@ -1,0 +1,89 @@
+# Server settings
+server:  
+    port: 8080
+
+# 对SPRINGMVC的支持，微服务是前后端分离，一般情况不需要可以注释掉
+spring:         
+    http:
+        encoding.charset: UTF-8  
+        encoding.enable: true  
+        encoding.force: true  
+#    mvc:
+#        view.prefix: /WEB-INF/jsp/
+#        view.suffix: .jsp
+    application:
+      name: event
+    cloud:
+      refresh:
+        refreshable: none
+# DATASOURCE mysql,rabbitmq,redis 简单数据源配置
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://192.168.0.62:5432/lsl_db?useUnicode=true&characterEncoding=utf-8
+        username: postgres
+        password:
+
+    rabbitmq:
+        host: 192.168.0.144
+        port: 5672
+        username: guest
+        password: guest
+        publisher-confirms: true
+        publisher-returns: true
+        listener:
+          direct:
+            acknowledge-mode: manual
+          simple:
+            acknowledge-mode: manual
+
+    redis:
+        host: 192.168.0.44
+        port: 6379
+        password: 123456
+        database: 6
+        timeout: 1000
+        jedis:
+          pool:
+            max-active: 100
+            max-idle: 10
+            max-wait: 100000
+            min-idle: 10
+
+
+
+                    #分页插件
+pagehelper:
+  helper-dialect: postgresql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+
+
+logging:
+  level:
+    com.cesec: debug
+##服务注册中心
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: http://server1:20001/eureka/,http://server2:20002/eureka/
+#
+#feign:
+#  hystrix:
+#    enabled: true
+#
+##监控中心
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*" #暴露所有端点 默认是info,health
+#  endpoint:
+#    health:
+#      show-details: always
+

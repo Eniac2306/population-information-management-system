@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+<script src="../../js/city.js"></script>
+<script src="../../js/method1.js"></script>
+<script src="../../js/method2.js"></script>
+<script src="../../js/method1.js"></script>
+<script src="../../layui/layui.all.js"></script>
+<script type="text/javascript" src="../../js/jquery-3.4.1.js"></script>
+
+<script>
+    // $(window).load(funtion(){})
+    $(document).ready(function () {
+        $.ajax({
+            url: '/getRowId',
+            type: "post",
+            success: function (data) {
+                $.ajax({
+                    url: '/getAllInfo',
+                    dataType: 'json',
+                    type: 'post',
+                    data: {
+                        rowId: data
+                    },
+                    success: function (res) {
+                        console.log(res);
+                        var baseInfoList = res.userBaseInfo;
+                        var carInfoList = res.carInfoList;
+                        var addressInfoList = res.addressInfoList;
+                        var careerInfoList = res.careerInfoList;
+                        //对人口基本信息进行赋值
+                        document.getElementById('rowId').innerHTML = baseInfoList.rowId;
+                        document.getElementById('name').innerHTML = baseInfoList.name;
+                        document.getElementById('idCard').innerHTML = baseInfoList.idCard;
+                        document.getElementById('newsex').innerHTML = baseInfoList.newsex;
+                        document.getElementById('newnation').innerHTML = baseInfoList.newnation;
+                        document.getElementById('height').innerHTML = baseInfoList.height;
+                        document.getElementById('bornDate').innerHTML = baseInfoList.bornDate;
+                        document.getElementById('birthPlace').innerHTML = baseInfoList.birthPlace;
+                        document.getElementById('phone').innerHTML = baseInfoList.phone;
+                        document.getElementById('education').innerHTML = baseInfoList.education;
+                        document.getElementById('politic').innerHTML = baseInfoList.politic;
+
+
+                        //对车辆表进行赋值
+                        var str1 = "";
+                        //先清空车辆表
+                        //todo
+                        $("#carinfo").html("");
+                        for (var i = 0; i < carInfoList.length; i++) {
+                            str1 = "<tr>" +
+                                "<td>" + carInfoList[i].rowId + "</td>" +
+                                "<td>" + carInfoList[i].carNumber + "</td>" +
+                                "<td>" + carInfoList[i].brand + "</td>" +
+                                "<td>" + carInfoList[i].model + "</td>" +
+                                "<td>" + carInfoList[i].color + "</td>" +
+                                "<td>" + carInfoList[i].newPrice + "</td>" +
+                                "<td>" + carInfoList[i].buyDate + "</td>" +
+                                "<td style=\"display:none\">" + carInfoList[i].price + "</td>" +
+                                "<td><button type='button'  class=\"layui-btn layui-btn-sm\" id='car_upt'> <i class=\"layui-icon\">修改</i></button>    <button type='button'  class=\"layui-btn layui-btn-sm\" id='car_del'> <i class=\"layui-icon\">删除</i></button> </td>"
+
+                            "</tr>";
+                            $("#carinfo").append(str1);
+                        }
+
+                        //对职业表进行赋值
+                        var str2 = "";
+                        //先清空职业表
+                        $("#careerinfo").html("");
+                        for (var i = 0; i < careerInfoList.length; i++) {
+                            str2 = "<tr>" +
+                                "<td>" + careerInfoList[i].rowId + "</td>" +
+                                "<td>" + careerInfoList[i].newIndustry + "</td>" +
+                                "<td>" + careerInfoList[i].companyName + "</td>" +
+                                "<td>" + careerInfoList[i].jobName + "</td>" +
+                                "<td>" + careerInfoList[i].time + "</td>" +
+                                   " <td style=\"display:none\">"+careerInfoList[i].industry+"<td>"+
+                                "<td><button type='button'  class=\"layui-btn layui-btn-sm\" id='career_upt'> <i class=\"layui-icon\">修改</i></button>    <button type='button'  class=\"layui-btn layui-btn-sm\" id='career_del'> <i class=\"layui-icon\">删除</i></button> </td>"
+                            "</tr>";
+                            $("#careerinfo").append(str2);
+                        }
+                        //对住址表进行赋值
+                        var str3 = "";
+                        //先清空住址表
+                        $("#addressinfo").html("");
+                        for (var i = 0; i < addressInfoList.length; i++) {
+                            str3 = "<tr>" +
+                                "<td>" + addressInfoList[i].rowId + "</td>" +
+                                "<td>" + addressInfoList[i].province + "</td>" +
+                                "<td>" + addressInfoList[i].city + "</td>" +
+                                "<td>" + addressInfoList[i].area + "</td>" +
+                                "<td>" + addressInfoList[i].details + "</td>" +
+                                "<td>" + addressInfoList[i].newIsRent + "</td>" +
+                                "<td>" + addressInfoList[i].newIsResident + "</td>" +
+                                "<td><button type='button'  class=\"layui-btn layui-btn-sm\" id='address_upt'> <i class=\"layui-icon\">修改</i></button>    <button type='button'  class=\"layui-btn layui-btn-sm\" id='address_del'> <i class=\"layui-icon\">删除</i></button></td>"
+                            "</tr>";
+                            $("#addressinfo").append(str3);
+                        }
+                    }
+                });
+                //
+
+            }
+        })
+    })
+
+    //点击车辆信息的修改响应操作
+    $(document).on('click', '#car_upt', function () {
+        var rowId = $(this).parents("tr").find("td").eq(0).text();
+        var carNumber = $(this).parents("tr").find("td").eq(1).text();
+        var brand = $(this).parents("tr").find("td").eq(2).text();
+        var model = $(this).parents("tr").find("td").eq(3).text();
+        var color = $(this).parents("tr").find("td").eq(4).text();
+        //TODO
+        var price = $(this).parents("tr").find("td").eq(7).text();
+        var buyDate = $(this).parents("tr").find("td").eq(6).text();
+        document.getElementById('car_rowId').value = rowId;
+        document.getElementById('car_carNumber').value = carNumber;
+        document.getElementById('car_brand').value = brand;
+        document.getElementById('car_model').value = model;
+        document.getElementById('car_color').value = color;
+        document.getElementById('car_price').value = price;
+        document.getElementById('car_buyDate').value = buyDate;
+        $("#Carform").show();
+    })
+    //车辆信息修改后的提交操作
+    $(document).on('click', '#car_submit_M', function () {
+        //获取修改后的信息
+        var rowId = document.getElementById('car_rowId').value;
+        var carNumber = document.getElementById('car_carNumber').value;
+        var brand = document.getElementById('car_brand').value;
+        var model = document.getElementById('car_model').value;
+        var color = document.getElementById('car_color').value;
+        var price = document.getElementById('car_price').value;
+        var buyDate = document.getElementById('car_buyDate').value;
+        var re = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[·]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
+        var carInfo = {
+            "rowId": rowId,
+            "carNumber": carNumber,
+            "brand": brand,
+            "model": model,
+            "color": color,
+            "price": price,
+            "buyDate": buyDate
+        }
+        if (carNumber.search(re) != -1) {
+            //定义车辆修改的action响应名称为carModify
+            $.ajax({
+                url: '/carModify',
+                type: "post",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(carInfo),
+                success: function (data) {
+                    if (data != null) {
+                        alert("修改成功！")
+                        $("#Carform").hide();
+                        window.location.reload();
+                    }
+                }
+            })
+        } else {
+            layer.msg("请输入合法车牌")
+        }
+
+    })
+    //车辆信息点击修改后的取消操作
+    $(document).on('click', '#car_cancel', function () {
+        $("#Carform").hide();
+    })
+
+
+    //点击职业信息的修改响应操作
+    $(document).on('click', '#career_upt', function () {
+        var rowId = $(this).parents("tr").find("td").eq(0).text();
+        var industry = $(this).parents("tr").find("td").eq(1).text();
+        var companyName = $(this).parents("tr").find("td").eq(2).text();
+        var jobName = $(this).parents("tr").find("td").eq(3).text();
+        var time = $(this).parents("tr").find("td").eq(4).text();
+        var old_industry = $(this).parents("tr").find("td").eq(5).text();
+
+        document.getElementById('career_rowId').value = rowId;
+        // document.getElementById('career_industry').value = industry;
+        $("#career_industry").find("option:selected").val(old_industry);
+        document.getElementById('career_companyName').value = companyName;
+        document.getElementById('career_jobName').value = jobName;
+        document.getElementById('career_time').value = time;
+        $("#Careerform").show();
+
+    })
+    //职业信息修改后的提交操作
+    $(document).on('click', '#career_submit_M', function () {
+        //获取修改后的信息
+        var rowId = document.getElementById('career_rowId').value;
+        var industry = document.getElementById('career_industry').value;
+        var companyName = document.getElementById('career_companyName').value;
+        var jobName = document.getElementById('career_jobName').value;
+        var time = document.getElementById('career_time').value;
+        var careerInfo = {
+            "rowId": rowId,
+            "industry": industry,
+            "companyName": companyName,
+            "jobName": jobName,
+            "time": time
+        }
+
+        if(!isNaN(time)){
+            //定义职业修改的action响应名称为careerModify
+            $.ajax({
+                url: '/careerModify',
+                type: "post",
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify(careerInfo),
+                success: function (data) {
+                    if (data != null) {
+                        alert("修改成功！")
+                        $("#Careerform").hide();
+                        window.location.reload();
+                    }
+                }
+            })
+        }else{
+            layer.msg("工作年限格式错误！")
+        }
+
+    })
+    //职业信息点击修改后的取消操作
+    $(document).on('click', '#career_cancel', function () {
+        $("#Careerform").hide();
+    })
+
+
+    //点击住址信息的修改响应操作
+    $(document).on('click', '#address_upt', function () {
+
+        var rowId = $(this).parents("tr").find("td").eq(0).text();
+        var province = $(this).parents("tr").find("td").eq(1).text();
+        var city = $(this).parents("tr").find("td").eq(2).text();
+        var area = $(this).parents("tr").find("td").eq(3).text();
+        var details = $(this).parents("tr").find("td").eq(4).text();
+        var isRent = $(this).parents("tr").find("td").eq(5).text();
+        var isResident = $(this).parents("tr").find("td").eq(6).text();
+
+        $("#addressform").show();
+        showProv();
+        document.getElementById('address_rowId').value = rowId;
+        // document.getElementById('address_province').textContent = province;
+        // document.getElementById('address_city').textContent = city;
+        // document.getElementById('address_area').textContent = area;
+        $("#address_province").find("option:selected").text(province);
+        $("#address_city").find("option:selected").text(city);
+        $("#address_area").find("option:selected").text(area);
+
+        document.getElementById('address_details').value = details;
+        document.getElementById('address_isRent').text = isRent;
+        document.getElementById('address_isResident').text = isResident;
+        // $("#address_isRent").find("option:selected").text(isRent);
+        // $("#address_isResident").find("option:selected").text(isResident);
+
+    })
+    //住址信息修改后的提交操作
+    $(document).on('click', '#address_submit_M', function () {
+        //获取修改后的信息
+        var rowId = document.getElementById('address_rowId').value;
+        var province = $("#address_province").find("option:selected").text();
+        var city = $("#address_city").find("option:selected").text();
+        var area = $("#address_area").find("option:selected").text();
+        var details = document.getElementById('address_details').value;
+        var isRent = document.getElementById('address_isRent').value;
+        var isResident = document.getElementById('address_isResident').value;
+        var addressInfo = {
+            "rowId": rowId,
+            "province": province,
+            "city": city,
+            "area": area,
+            "details": details,
+            "isRent": isRent,
+            "isResident": isResident
+        }
+        //定义住址修改的action响应名称为addressModify
+        $.ajax({
+            url: '/addressModify',
+            type: "post",
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify(addressInfo),
+            success: function (data) {
+                if (data != null) {
+                    alert("修改成功！")
+                    $("#addressform").hide();
+                    window.location.reload();
+                }
+            }
+        })
+
+    })
+    //住址信息点击修改后的取消操作
+    $(document).on('click', '#address_cancel', function () {
+        $("#addressform").hide();
+    })
+
+
+    //车辆信息点击删除后的操作
+    $(document).on('click', '#car_del', function () {
+        if (confirm("确定要删除吗?")) {
+            var rowId = $(this).parents("tr").find("td").eq(0).text();
+            //发起删除请求
+            //定义车辆删除的action响应名称为carDelete
+            $.ajax({
+                url: '/carDelete',
+                type: "post",
+                data: {
+                    rowId: rowId,
+                },
+                success: function (data) {
+                    if (data != null) {
+                        alert("删除成功！")
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+    })
+
+    //职业信息点击删除后的操作
+    $(document).on('click', '#career_del', function () {
+        if (confirm("确定要删除吗?")) {
+            var rowId = $(this).parents("tr").find("td").eq(0).text();
+            //发起删除请求
+            //定义职业删除的action响应名称为careerDelete
+            $.ajax({
+                url: '/careerDelete',
+                type: "post",
+                data: {
+                    rowId: rowId,
+                },
+                success: function (data) {
+                    if (data != null) {
+                        alert("删除成功！")
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+    })
+
+    //住址信息点击删除后的操作
+    $(document).on('click', '#address_del', function () {
+        if (confirm("确定要删除吗?")) {
+            var rowId = $(this).parents("tr").find("td").eq(0).text();
+            //发起删除请求
+            //定义住址删除的action响应名称为addressDelete
+            $.ajax({
+                url: '/addressDelete',
+                type: "post",
+                data: {
+                    rowId: rowId,
+                },
+                success: function (data) {
+                    if (data != null) {
+                        alert("删除成功！")
+                        window.location.reload();
+                    }
+                }
+            })
+        }
+    })
+
+
+    //车辆信息点击新增后的新增操作
+    $(document).on('click', '#car_add', function () {
+        $("#Carform_A").show();
+    })
+    //车辆信息新增后的提交按钮响应
+    $(document).on('click', '#car_submit_A', function () {
+        var fRowId = document.getElementById('rowId').innerHTML;
+        var carNumber = document.getElementById('car_carNumber_A').value;
+        var brand = document.getElementById('car_brand_A').value;
+        var model = document.getElementById('car_model_A').value;
+        var color = document.getElementById('car_color_A').value;
+        var price = document.getElementById('car_price_A').value;
+        var buyDate = document.getElementById('car_buyDate_A').value;
+        var re = /^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[·]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}$/;
+        var carInfo = {
+            "fRowId": fRowId,
+            "carNumber": carNumber,
+            "brand": brand,
+            "model": model,
+            "color": color,
+            "price": price,
+            "buyDate": buyDate
+        }
+        if (carNumber.search(re) != -1) {
+            $.ajax({
+                url: '/carAdd',
+                type: "post",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(carInfo),
+                success: function (data) {
+                    if (data != null) {
+                        alert("增加成功！")
+                        $("#Carform_A").hide();
+                        window.location.reload();
+                    }
+                }
+            })
+        } else {
+            layer.msg("请输入合法车牌！")
+        }
+    })
+    //车辆信息点击新增后的取消操作
+    $(document).on('click', '#car_cancel_A', function () {
+        $("#Carform_A").hide();
+    })
+
+    //职业信息点击新增后的新增操作
+    $(document).on('click', '#career_add', function () {
+        $("#Careerform_A").show();
+    })
+    //职业信息新增后的提交按钮响应
+    $(document).on('click', '#career_submit_A', function () {
+        var fRowId = document.getElementById('rowId').innerHTML;
+        var industry = document.getElementById('career_industry_A').value;
+        var companyName = document.getElementById('career_companyName_A').value;
+        var jobName = document.getElementById('career_jobName_A').value;
+        var time = document.getElementById('career_time_A').value;
+        var careerInfo = {
+            "fRowId": fRowId,
+            "industry": industry,
+            "companyName": companyName,
+            "jobName": jobName,
+            "time": time
+        }
+        if(!isNaN(time)){
+            //定义职业修改的action响应名称为careerModify
+            $.ajax({
+                url: '/careerAdd',
+                type: "post",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(careerInfo),
+                success: function (data) {
+                    if (data != null) {
+                        alert("增加成功！")
+                        $("#Careerform_A").hide();
+                        window.location.reload();
+                    }
+                }
+            })
+        }else{
+            layer.msg("工作年限格式错误！")
+        }
+    })
+    //职业信息点击新增后的取消操作
+    $(document).on('click', '#career_cancel_A', function () {
+        $("#Careerform_A").hide();
+    })
+    //住址信息点击新增后的新增操作
+    $(document).on('click', '#address_add', function () {
+        $("#addressform_A").show();
+        showProv1();
+    })
+    //住址信息新增后的提交按钮响应
+    $(document).on('click', '#address_submit_A', function () {
+        var fRowId = document.getElementById('rowId').innerHTML;
+        var province = $("#address_province_A").find("option:selected").text();
+        var city = $("#address_city_A").find("option:selected").text();
+        var area = $("#address_area_A").find("option:selected").text();
+        var details = document.getElementById('address_details_A').value;
+        var isRent = document.getElementById('address_isRent_A').value;
+        var isResident = document.getElementById('address_isResident_A').value;
+
+        var addressInfo = {
+            "fRowId": fRowId,
+            "province": province,
+            "city": city,
+            "area": area,
+            "details": details,
+            "isRent": isRent,
+            "isResident": isResident
+        }
+        $.ajax({
+            url: '/addressAdd',
+            type: "post",
+            dataType: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(addressInfo),
+            success: function (data) {
+                if (data != null) {
+                    alert("增加成功！")
+                    $("#addressform_A").hide();
+                    window.location.reload();
+                }
+            }
+        })
+    })
+    //住址信息点击新增后的取消操作
+    $(document).on('click', '#address_cancel_A', function () {
+        $("#addressform_A").hide();
+    })
+    //点击刷新后的刷新操作
+    $(document).on('click', '#reload', function () {
+        window.location.reload();
+    })
+
+
+</script>
+<body>
+<label id="test" name="test" style="display:none"></label>
+
+<!--人员基本信息展示表-->
+<div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+        <legend>人员基本信息</legend>
+    </fieldset>
+    <div style="padding: 20px; background-color: #F2F2F2;">
+        <div>
+            <div style="font-size: 16px; color:#647f92">
+                <div class="layui-row">
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo grid-demo-bg1" style="    position: relative;
+    left: 50px;"> 序号：<label id="rowId" name="rowId"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 姓名：<label id="name" name="name"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 身份证：<label id="idCard" name="idCard"></label></div>
+                    </div>
+                </div>
+                <br/>
+                <div class="layui-row">
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo grid-demo-bg1" style="    position: relative;
+    left: 50px;"> 性别：<label id="newsex" name="newsex"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 民族：<label id="newnation" name="newnation"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 身高：<label id="height" name="height"></label></div>
+                    </div>
+                </div>
+                <br/>
+                <div class="layui-row">
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo grid-demo-bg1" style="    position: relative;
+    left: 50px;"> 出生日期：<label id="bornDate" name="bornDate"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 出生地：<label id="birthPlace" name="birthPlace"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 手机号码：<label id="phone" name="phone"></label></div>
+                    </div>
+                </div>
+                <br/>
+                <div class="layui-row">
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo grid-demo-bg1" style="    position: relative;
+    left: 50px;"> 教育程度：<label id="education" name="education"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"> 政治面貌：<label id="politic" name="politic"></label></div>
+                    </div>
+                    <div class="layui-col-xs4">
+                        <div class="grid-demo" style="    position: relative;
+    left: 50px;"></div>
+                    </div>
+                </div>
+                <br/>
+            </div>
+            <!--    序号：<label id ="rowId" name = "rowId"></label>-->
+            <!--    姓名：<label id="name" name="name"></label><br>-->
+            <!--    身份证：<label id="idCard" name="idCard"></label><br>-->
+            <!--    性别：<label id="newsex" name="newsex"></label>-->
+            <!--    民族：<label id="newnation" name="newnation"></label>-->
+            <!--    身高：<label id="height" name="height"></label>-->
+            <!--    出生日期：<label id="bornDate" name="bornDate"></label>-->
+            <!--    出生地：<label id="birthPlace" name="birthPlace"></label>-->
+            <!--    手机号码：<label id="phone" name="phone"></label>-->
+            <!--    教育程度：<label id="education" name="education"></label>-->
+            <!--    政治面貌：<label id="politic" name="politic"></label>-->
+        </div>
+    </div>
+</div>
+<br/>
+<div>
+    <button type="button" class="layui-btn layui-btn-sm" id="car_add" style="
+    position: relative;
+    left: 140px;
+">
+        <i class="layui-icon">添加车辆信息</i>
+    </button>
+    <button type="button" class="layui-btn layui-btn-sm" id="career_add" style="
+    position: relative;
+    left: 340px;
+">
+        <i class="layui-icon">添加职业信息</i>
+    </button>
+    <button type="button" class="layui-btn layui-btn-sm" id="address_add" style="
+    position: relative;
+    left: 540px;
+">
+        <i class="layui-icon">添加住址信息</i>
+    </button>
+    <button type="button" class="layui-btn layui-btn-sm" id="reload" style="
+    position: relative;
+    left: 740px;
+">
+        <i class="layui-icon">刷新</i>
+    </button>
+</div>
+<!--
+车辆信息展示表
+-->
+<div>
+    <div>
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend> 车辆信息</legend>
+        </fieldset>
+
+        <!--      <input type='button' id='car_add' value='添加车辆信息'>-->
+
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div>
+                <table id="car" name="car" class="layui-table">
+                    <thead>
+                    <th>车辆序号</th>
+                    <th>车牌号</th>
+                    <th>车辆品牌</th>
+                    <th>车辆型号</th>
+                    <th>车辆颜色</th>
+                    <th>车辆价格（万元）</th>
+                    <th>购买日期</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="carinfo" name="carinfo">
+                    </tbody>
+                </table>
+                <div>
+                    <div id="Carform" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: red;"> 修改车辆信息</legend>
+                        </fieldset>
+                        <form class="layui-form">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆序号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_rowId" id="car_rowId" lay-verify="" autocomplete="off"
+                                           class="layui-input" readonly="readonly">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车牌号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_carNumber" id="car_carNumber" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆品牌</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_brand" id="car_brand" lay-verify="" autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆型号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_model" id="car_model" lay-verify="" autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆颜色</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_color" id="car_color" lay-verify="" autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆价格</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_price" id="car_price" lay-verify="number"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">购买日期</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_buyDate" id="car_buyDate" lay-verify="date"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <div style=" position: relative;left: 110px;top: 10px;">
+                                    <button type="button" class="layui-btn layui-btn-sm" lay-submit=""
+                                            id="car_submit_M">
+                                        <i class="layui-icon">提交</i>
+                                    </button>
+                                    <!--      <input type='button' id='car_cancel' value='取消'>-->
+                                    <button type="button" class="layui-btn layui-btn-sm" id="car_cancel">
+                                        <i class="layui-icon">取消</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div>
+                    <div id="Carform_A" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: dodgerblue;"> 增加车辆信息</legend>
+                        </fieldset>
+                        <form class="layui-form">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车牌号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_carNumber_A" id="car_carNumber_A" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--            车牌号:<input type="text" name="car_carNumber_A" id="car_carNumber_A">-->
+                                <!--            车辆品牌:<input type="text" name="car_brand_A" id="car_brand_A">-->
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆品牌</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_brand_A" id="car_brand_A" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆型号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_model_A" id="car_model_A" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <!--            车辆型号:<input type="text" name="car_model_A" id="car_model_A">-->
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆颜色</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_color_A" id="car_color_A" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--            车辆颜色:<input type="text" name="car_color_A" id="car_color_A">-->
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">车辆价格</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_price_A" id="car_price_A" lay-verify="number"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--            车辆价格:<input type="text" name="car_price_A" id="car_price_A">-->
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">购买日期</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="car_buyDate_A" id="car_buyDate_A" lay-verify="date"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--            <input type='button' id='car_submit_A' value='提交'>-->
+                                <div style="position: relative;left: 120px;top: 7px;">
+                                    <button type="button" class="layui-btn layui-btn-sm" lay-submit=""
+                                            id="car_submit_A">
+                                        <i class="layui-icon">提交</i>
+                                    </button>
+                                    <!--            <input type='button' id='car_cancel_A' value='取消'>-->
+                                    <button type="button" class="layui-btn layui-btn-sm" id="car_cancel_A">
+                                        <i class="layui-icon">取消</i>
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--
+职业信息展示表
+-->
+<div>
+    <div>
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend> 职业信息</legend>
+        </fieldset>
+        <!--    <input type='button' id='career_add' value='添加职业信息'>-->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+            <div>
+                <table id="career" name="career" class="layui-table">
+                    <thead>
+                    <th>序号</th>
+                    <th>职业类型</th>
+                    <th>公司名称</th>
+                    <th>岗位名称</th>
+                    <th>从事岗位的年限</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="careerinfo" name="careerinfo">
+
+                    </tbody>
+                </table>
+                <div>
+                    <div id="Careerform" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: red;"> 修改职业信息</legend>
+                        </fieldset>
+                        <form>
+                            <!--                序号:<input type="text" name="career_rowId" id="career_rowId" readonly="readonly" >-->
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">序号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_rowId" id="career_rowId" lay-verify=""
+                                           autocomplete="off" class="layui-input" readonly="readonly">
+                                </div>
+
+
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">公司名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_companyName" id="career_companyName" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">岗位名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_jobName" id="career_jobName" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">
+                                    从事岗位的年限</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_time" id="career_time" lay-verify="number"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">职业类型</label>
+                                    <div class="layui-input-inline">
+                                        <select name="career_industry" id="career_industry" class="layui-input">
+                                            <option value="0"></option>
+                                            <option value="1">农</option>
+                                            <option value="2">林</option>
+                                            <option value="3">牧</option>
+                                            <option value="4">渔业</option>
+                                            <option value="5">采矿业</option>
+                                            <option value="6">制造业</option>
+                                            <option value="7">电力</option>
+                                            <option value="8">热力</option>
+                                            <option value="9">燃气及水生产和供应业</option>
+                                            <option value="10">建筑业</option>
+                                            <option value="11">批发和零售业</option>
+                                            <option value="12">交通运输</option>
+                                            <option value="13">仓储和邮政业</option>
+                                            <option value="14">住宿和餐饮业</option>
+                                            <option value="15">信息传输</option>
+                                            <option value="16">软件和信息技术服务业</option>
+                                            <option value="17">金融业</option>
+                                            <option value="18">房地产业</option>
+                                            <option value="19">租赁和商务服务业</option>
+                                            <option value="20">科学研究和技术服务业</option>
+                                            <option value="21">水利</option>
+                                            <option value="22">环境和公共设施管理业</option>
+                                            <option value="23">居民服务</option>
+                                            <option value="24">修理和其他服务业</option>
+                                            <option value="25">教育</option>
+                                            <option value="26">卫生和社会工作</option>
+                                            <option value="27">文化</option>
+                                            <option value="28">体育和娱乐业</option>
+                                            <option value="29">公共管理</option>
+                                            <option value="30">社会保障和社会组织</option>
+                                            <option value="31">国际组织</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style=" position: relative;left: 550px;top: -40px">
+                                    <button type="button" class="layui-btn layui-btn-sm" lay-submit=""
+                                            id="career_submit_M">
+                                        <i class="layui-icon">提交</i>
+                                    </button>
+                                    <!--                <input type='button' id='career_cancel' value='取消'>-->
+                                    <button type="button" class="layui-btn layui-btn-sm" id="career_cancel">
+                                        <i class="layui-icon">取消</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div>
+                    <div id="Careerform_A" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: dodgerblue;"> 增加职业信息</legend>
+                        </fieldset>
+                        <form>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">职业类型</label>
+                                    <div class="layui-input-inline">
+                                        <!--                职业类型:-->
+                                        <!--                <input type="text" name="career_industry_A" id="career_industry_A">-->
+                                        <select name="career_industry_A" id="career_industry_A" class="layui-input">
+                                            <option value="0"></option>
+                                            <option value="1">农</option>
+                                            <option value="2">林</option>
+                                            <option value="3">牧</option>
+                                            <option value="4">渔业</option>
+                                            <option value="5">采矿业</option>
+                                            <option value="6">制造业</option>
+                                            <option value="7">电力</option>
+                                            <option value="8">热力</option>
+                                            <option value="9">燃气及水生产和供应业</option>
+                                            <option value="10">建筑业</option>
+                                            <option value="11">批发和零售业</option>
+                                            <option value="12">交通运输</option>
+                                            <option value="13">仓储和邮政业</option>
+                                            <option value="14">住宿和餐饮业</option>
+                                            <option value="15">信息传输</option>
+                                            <option value="16">软件和信息技术服务业</option>
+                                            <option value="17">金融业</option>
+                                            <option value="18">房地产业</option>
+                                            <option value="19">租赁和商务服务业</option>
+                                            <option value="20">科学研究和技术服务业</option>
+                                            <option value="21">水利</option>
+                                            <option value="22">环境和公共设施管理业</option>
+                                            <option value="23">居民服务</option>
+                                            <option value="24">修理和其他服务业</option>
+                                            <option value="25">教育</option>
+                                            <option value="26">卫生和社会工作</option>
+                                            <option value="27">文化</option>
+                                            <option value="28">体育和娱乐业</option>
+                                            <option value="29">公共管理</option>
+                                            <option value="30">社会保障和社会组织</option>
+                                            <option value="31">国际组织</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">公司名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_companyName_A" id="career_companyName_A"
+                                           lay-verify="" autocomplete="off" class="layui-input">
+                                </div>
+                                <!--                公司名称:<input type="text" name="career_companyName_A" id="career_companyName_A">-->
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">岗位名称</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_jobName_A" id="career_jobName_A" lay-verify=""
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--                岗位名称:<input type="text" name="career_jobName_A" id="career_jobName_A">-->
+                                <label class="layui-form-label"
+                                       style="font-size: 14px ; color:#393d49;">从事该岗位的年限</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="career_time_A" id="career_time_A" lay-verify="number"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                                <!--                从事该岗位的年限:<input type="text" name="career_time_A" id="career_time_A">-->
+                                <!--                <input type='button' id='career_submit_A' value='提交'>-->
+                                <div style="position: relative;left: -300px;top:7px;">
+                                    <button type="button" class="layui-btn layui-btn-sm" lay-submit=""
+                                            id="career_submit_A">
+                                        <i class="layui-icon">提交</i>
+                                    </button>
+                                    <!--                <input type='button' id='career_cancel_A' value='取消'>-->
+                                    <button type="button" class="layui-btn layui-btn-sm" id="career_cancel_A">
+                                        <i class="layui-icon">取消</i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--
+住址信息展示表
+-->
+<div>
+    <div>
+        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+            <legend> 住址信息</legend>
+        </fieldset>
+        <!--    <input type='button' id='address_add' value='添加住址信息'>-->
+        <div style="padding: 20px; background-color: #F2F2F2;">
+
+            <div>
+                <table id="address" name="address" class="layui-table">
+                    <thead>
+                    <th>序号</th>
+                    <th>省</th>
+                    <th>市</th>
+                    <th>区/县</th>
+                    <th>住址详情</th>
+                    <th>是否为出租房</th>
+                    <th>是否为常驻地址</th>
+                    <th>操作</th>
+                    </thead>
+                    <tbody id="addressinfo" name="addressinfo">
+
+                    </tbody>
+                </table>
+                <div>
+                    <div id="addressform" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: red;"> 修改住址信息</legend>
+                        </fieldset>
+                        <form>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">序号</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="address_rowId" id="address_rowId" lay-verify=""
+                                           autocomplete="off" class="layui-input" readonly="readonly">
+                                </div>
+                                <!--                序号:<input type="text" name="address_rowId" id="address_rowId" readonly="readonly">-->
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">是否为常驻</label>
+                                    <div class="layui-input-inline">
+                                        <select name="address_isResident" id="address_isResident" class="layui-input">
+                                            <option value="1">是</option>
+                                            <option value="0">否</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">是否为出租</label>
+                                    <div class="layui-input-inline">
+                                        <select name="address_isRent" id="address_isRent" class="layui-input">
+                                            <option value="1">是</option>
+                                            <option value="0">否</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">省</label>
+                                    <div class="layui-input-inline">
+                                        <!--                省:-->
+                                        <!--                <input type="text" name="address_province" id="address_province" >-->
+                                        <select id="address_province" name="address_province" onchange="showCity(this)"
+                                                class="layui-input">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">市</label>
+                                    <div class="layui-input-inline">
+                                        <!--                市:-->
+                                        <!--                <input type="text" name="address_city" id="address_city" >-->
+                                        <select id="address_city" name="address_city" onchange="showCountry(this)"
+                                                class="layui-input">
+                                            <option value=""></option>
+                                        </select></div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">区/县</label>
+                                    <div class="layui-input-inline">
+                                        <!--                <input type="text" name="address_area" id="address_area">-->
+                                        <select name="address_area" id="address_area" onchange="selecCountry(this)"
+                                                class="layui-input">
+                                            <option value=""></option>
+                                        </select></div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label"
+                                           style="font-size: 14px ; color:#393d49;">住址详情</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="address_details" id="address_details" lay-verify=""
+                                               autocomplete="off" class="layui-input">
+                                    </div>
+
+
+                                    <!--                    <label class="layui-form-label" style="font-size: 14px ; color:#393d49;">住址详情</label>-->
+                                    <!--                    <div class="layui-input-inline">-->
+                                    <!--                        <input type="text" name="address_details" id="address_details" lay-verify=""  autocomplete="off" class="layui-input" readonly="">-->
+                                    <!--                    </div>-->
+                                    <!--                住址详情:<input type="text" name="address_details" id="address_details" >-->
+
+
+                                    <!--                <input type='button' id='address_submit_M' value='提交'>-->
+                                    <div style="position: relative;left: 200px;top:5px;">
+                                        <button type="button" class="layui-btn layui-btn-sm"
+                                                id="address_submit_M">
+                                            <i class="layui-icon">提交</i>
+                                        </button>
+                                        <!--                <input type='button' id='address_cancel' value='取消'>-->
+                                        <button type="button" class="layui-btn layui-btn-sm" id="address_cancel">
+                                            <i class="layui-icon">取消</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div>
+                    <div id="addressform_A" style="display: none">
+                        <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                            <legend style="color: dodgerblue;"> 增加住址信息</legend>
+                        </fieldset>
+                        <form>
+                            <div class="layui-form-item">
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">省</label>
+                                    <div class="layui-input-inline">
+                                        <select id="address_province_A" name="address_province_A"
+                                                onchange="showCity1(this)" class="layui-input">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label">市</label>
+                                    <div class="layui-input-inline">
+
+                                        <!--                <input type="text" name="address_city_A" id="address_city_A">-->
+                                        <select id="address_city_A" name="address_city_A" onchange="showCountry1(this)"
+                                                class="layui-input">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-inline">
+                                    <label class="layui-form-label"> 区/县</label>
+                                    <div class="layui-input-inline">
+
+                                        <!--                <input type="text" name="address_area_A" id="address_area_A">-->
+                                        <select name="address_area_A" id="address_area_A" onchange="selecCountry1(this)"
+                                                class="layui-input">
+                                            <option value=""></option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label"
+                                           style="font-size: 14px ; color:#393d49;">住址详情</label>
+                                    <div class="layui-input-inline">
+                                        <input type="text" name="address_details_A" id="address_details_A" lay-verify=""
+                                               autocomplete="off" class="layui-input">
+                                    </div>
+                                    <!--                住址详情:<input type="text" name="address_details_A" id="address_details_A">-->
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">是否为出租</label>
+                                        <div class="layui-input-inline">
+                                            <!--                <input type="text" name="address_isRent_A" id="address_isRent_A">-->
+                                            <select name="address_isRent_A" id="address_isRent_A" class="layui-input">
+                                                <option value="1">是</option>
+                                                <option value="0">否</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="layui-inline">
+                                        <label class="layui-form-label">是否为常驻</label>
+                                        <div class="layui-input-inline">
+                                            <!--                <input type="text" name="address_isResident_A" id="address_isResident_A">-->
+                                            <select name="address_isResident_A" id="address_isResident_A"
+                                                    class="layui-input">
+                                                <option value="1">是</option>
+                                                <option value="0">否</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="position: relative;left: 500px; top: 7px;">
+                                        <!--                <input type='button' id='address_submit_A' value='提交'>-->
+                                        <button type="button" class="layui-btn layui-btn-sm" id="address_submit_A">
+                                            <i class="layui-icon">提交</i>
+                                        </button>
+                                        <!--                <input type='button' id='address_cancel_A' value='取消'>-->
+                                        <button type="button" class="layui-btn layui-btn-sm" id="address_cancel_A">
+                                            <i class="layui-icon">取消</i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

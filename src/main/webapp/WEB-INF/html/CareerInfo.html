@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>职业信息查询页面</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--<script type="text/javascript" src = "../../js/jquery-3.4.1.js"></script>-->
+<!--    <link rel="stylesheet" href="../../layui/css/layui.css"  media="all">-->
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+
+</head>
+<body>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+<div style="margin:0 auto ;text-align: center;">
+<div class="demoTable">
+    请输入公司名称：
+    <div class="layui-inline">
+        <input class="layui-input" name="companyName" id="demoReloadcompanyName" autocomplete="off" >
+    </div>
+    请输入职业类型：
+    <div class="layui-inline">
+<!--        <input class="layui-input" name="industry" id="demoReloadindustry" autocomplete="off">-->
+        <select class="layui-input" name="industry" id="demoReloadindustry" autocomplete="off" >
+            <option value="0"></option>
+            <option value="1">农</option>
+            <option value="2">林</option>
+            <option value="3">牧</option>
+            <option value="4">渔业</option>
+            <option value="5">采矿业</option>
+            <option value="6">制造业</option>
+            <option value="7">电力</option>
+            <option value="8">热力</option>
+            <option value="9">燃气及水生产和供应业</option>
+            <option value="10">建筑业</option>
+            <option value="11">批发和零售业</option>
+            <option value="12">交通运输</option>
+            <option value="13">仓储和邮政业</option>
+            <option value="14">住宿和餐饮业</option>
+            <option value="15">信息传输</option>
+            <option value="16">软件和信息技术服务业</option>
+            <option value="17">金融业</option>
+            <option value="18">房地产业</option>
+            <option value="19">租赁和商务服务业</option>
+            <option value="20">科学研究和技术服务业</option>
+            <option value="21">水利</option>
+            <option value="22">环境和公共设施管理业</option>
+            <option value="23">居民服务</option>
+            <option value="24">修理和其他服务业</option>
+            <option value="25">教育</option>
+            <option value="26">卫生和社会工作</option>
+            <option value="27">文化</option>
+            <option value="28">体育和娱乐业</option>
+            <option value="29">公共管理</option>
+            <option value="30">社会保障和社会组织</option>
+            <option value="31">国际组织</option>
+        </select>
+
+    </div>
+    <button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>
+
+</div>
+<!--<button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>-->
+</div>
+
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+
+<!--<script src="../../layui/layui.js" charset="utf-8"></script>-->
+<script src ="../../layui/layui.all.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="details">详情</a>
+
+</script>
+<script>
+
+
+    layui.use('table', function(){
+        var table = layui.table;
+        var layer = layui.layer,
+            $ = layui.jquery;
+        table.render({
+            elem: '#test'
+            ,url:'/selectCareerByIndustry'
+            ,toolbar: '#toolbarDemo'
+            ,title: '职业信息数据表'
+            ,totalRow: true
+            ,cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    // {field:'rowId', title:'ID', width:80, fixed: 'left',sort:true}
+                ,{field:'newIndustry',title:'职业类别',width:170}
+                ,{field:'companyName',title:'公司名称',width:130}
+                ,{field:'jobName',title:'岗位名称',width:140}
+                ,{field:'time',title:'从事该岗位的年限',width:160}
+                ,{field:'userName',title:'姓名',width:140}
+                ,{field:'userIdCard',title:'身份证',width:200}
+                ,{field:'right',title:'操作',toolbar:'#barDemo',width:150}
+            ]
+            ]
+            ,page: true
+            ,id:'userTableReload'
+            ,limit:10
+        });
+
+        //工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选')
+                    break;
+            };
+        });
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            var rowId = data.userRowId;
+            var editList=[];//存放获取到的那条json数据的value值
+            $.each(data,function (name,value) {
+               editList.push(value);
+            });
+            if(obj.event === 'details'){
+                //打开详细信息，跳转页面
+                //
+                // var url = "/todetails?rowId="+rowId;
+                // window.open(url);
+
+                layer.open({
+                    type:2
+                    ,title:'人员详细信息'
+                    ,shadeClose:true
+                    ,shade:0.8
+                    ,maxmin:true
+                    ,area:['100%','100%']
+                    , content:'/todetails?rowId='+rowId
+                    ,success:function (layero,index) {
+                        var body = layer.getChildFrame('body',index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']];
+                        var inputList = body.find("input");
+
+                    }
+                })
+            }
+            else{
+
+            }
+        });
+
+        //根据条件查询表格数据重新加载
+        var $ = layui.$, active = {
+            reload: function(){
+                  var companyName = document.getElementById("demoReloadcompanyName").value;
+                 var industry = document.getElementById("demoReloadindustry").value;
+                //   var nation = document.getElementById("demoReloadnation").value;
+               // var nation=$("#demoReloadnation option:selected").val();
+
+                //执行重载
+                table.reload('userTableReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    //根据条件查询
+                    ,where: {
+                        companyName:companyName,
+                        industry:industry
+                    }
+                });
+            }
+        };
+
+        //点击搜索按钮根据用户名称查询
+        $('#search').on('click',
+            function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+    });
+
+
+</script>
+
+</body>
+</html>
+
+
+
+<!--
+--->

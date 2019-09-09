@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>
+        车辆信息查询页面
+    </title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--<script type="text/javascript" src = "../../js/jquery-3.4.1.js"></script>-->
+    <!--    <link rel="stylesheet" href="../../layui/css/layui.css"  media="all">-->
+    <link rel="stylesheet" href="../../layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+
+</head>
+<body>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+    </div>
+</script>
+<div style="margin:0 auto ;text-align: center;">
+<div class="demoTable">
+    请输入车牌号：
+    <div class="layui-inline">
+        <input class="layui-input" name="carNumber" id="demoReloadcarNumber" autocomplete="off" >
+    </div>
+    请输入车辆品牌：
+    <div class="layui-inline">
+        <input class="layui-input" name="brand" id="demoReloadbrand" autocomplete="off">
+    </div>
+    <button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>
+
+</div>
+<!--<button class="layui-btn" id = "search" data-type="reload" onclick="return false">搜索</button>-->
+</div>
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<!--<script src="../../layui/layui.js" charset="utf-8"></script>-->
+<script src ="../../layui/layui.all.js" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="back">还原</a>
+</script>
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        var layer = layui.layer,
+            $ = layui.jquery;
+        table.render({
+            elem: '#test'
+            ,url:'/selectCarByNumber'
+            ,toolbar: '#toolbarDemo'
+            ,title: '车辆信息数据表'
+            ,totalRow: true
+            ,cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    // {field:'rowId', title:'ID', width:80, fixed: 'left',sort:true}
+                    ,{field:'carNumber',title:'车牌号',width:103}
+                    ,{field:'brand',title:'车辆品牌',width:130}
+                    ,{field:'model',title:'车辆型号',width:130}
+                    ,{field:'color',title:'车身颜色',width:140}
+                    ,{field:'newPrice',title:'价格(万元)',width:140}
+                    ,{field:'buyDate',title:'购买日期',width:160}
+                    ,{field:'userName',title:'车主姓名',width:140}
+                    ,{field:'userIdCard',title:'车主身份证',width:180}
+                    ,{field:'right',title:'操作',toolbar:'#barDemo',width:80}
+                ]
+            ]
+            ,page: true
+            ,id:'userTableReload'
+            ,limit:10
+        });
+
+        //工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            var data = checkStatus.data;
+            switch(obj.event){
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选')
+                    break;
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function (obj) {
+            var data = obj.data;
+            var rowId = data.rowId;
+            var editList = [];//存放获取到的那条json数据的value值
+            $.each(data, function (name, value) {
+                editList.push(value);
+            });
+            if (obj.event === 'back') {
+                layer.confirm('确定还原吗', function (index) {
+                    $.ajax({
+                        url: "/deleteUserInfo",
+                        data: {
+                            rowId: rowId
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            if (data.status != 0) {
+                                layer.msg("还原成功！");
+                                layer.close(index);
+                                //更新数据
+                                $("#search").click();
+                            } else {
+                                layer.msg("还原失败!");
+                            }
+                        }
+                    })
+                });
+            }  else {
+
+            }
+        });
+
+        //根据条件查询表格数据重新加载
+        var $ = layui.$, active = {
+            reload: function(){
+                var carNumber = document.getElementById("demoReloadcarNumber").value;
+                var brand = document.getElementById("demoReloadbrand").value;
+
+
+                //执行重载
+                table.reload('userTableReload', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
+                    //根据条件查询
+                    ,where: {
+                        carNumber:carNumber,
+                        brand:brand,
+                    }
+                });
+            }
+        };
+
+        //点击搜索按钮根据用户名称查询
+        $('#search').on('click',
+            function(){
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+    });
+
+
+</script>
+
+</body>
+</html>
+
+
+
+<!--
+--->
